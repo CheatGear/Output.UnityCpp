@@ -85,7 +85,7 @@ public static class LangPrintHelper
             Value = field.Value,
             ArrayDim = field.ArrayDim,
             Bitfield = field.Bitfield,
-            Private = false/*field.Private*/,
+            Private = false /*field.Private*/,
             Static = field.IsStatic,
             Const = field.IsConst,
             Constexpr = field.IsConstexpr,
@@ -165,7 +165,7 @@ public static class LangPrintHelper
             TemplateParams = func.TemplateParams,
             Params = @params.Select(ep => ep.ToCpp()).ToList(),
             Body = func.Body,
-            Private = false/*func.Private*/,
+            Private = false /*func.Private*/,
             Static = isStatic,
             Const = func.IsConst,
             Friend = func.IsFriend,
@@ -183,8 +183,8 @@ public static class LangPrintHelper
     internal static CppStruct ToCpp(this EngineStruct @struct)
     {
         string sizeInfo = @struct.InheritedSize > 0
-                ? $"Size -> 0x{@struct.Size - @struct.InheritedSize:X4} (FullSize[0x{@struct.Size:X4}] - InheritedSize[0x{@struct.InheritedSize:X4}])"
-                : $"Size -> 0x{@struct.Size:X4}";
+            ? $"Size -> 0x{@struct.Size - @struct.InheritedSize:X4} (FullSize[0x{@struct.Size:X4}] - InheritedSize[0x{@struct.InheritedSize:X4}])"
+            : $"Size -> 0x{@struct.Size:X4}";
 
         var comments = new List<string>()
         {

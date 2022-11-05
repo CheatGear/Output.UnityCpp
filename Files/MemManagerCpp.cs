@@ -11,7 +11,9 @@ public class MemManagerCpp : IncludeFile<UnityCpp>
     public override string FileName { get; } = "MemoryManager.cpp";
     public override bool IncludeInMainSdkFile { get; } = false;
 
-    public MemManagerCpp(UnityCpp lang) : base(lang) { }
+    public MemManagerCpp(UnityCpp lang) : base(lang)
+    {
+    }
 
     public override ValueTask<string> ProcessAsync(OutputProps processProps)
     {

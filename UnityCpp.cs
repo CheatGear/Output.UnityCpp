@@ -51,7 +51,8 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 
     public override string OutputName => "Cpp";
     public override EngineType SupportedEngines => EngineType.Unity;
-    public override OutputProps SupportedProps => OutputProps.Internal/* | OutputProps.External*/;
+    public override OutputProps SupportedProps => OutputProps.Internal /* | OutputProps.External*/;
+
     public override IReadOnlyDictionary<Enum, OutputOption> Options { get; } = new Dictionary<Enum, OutputOption>()
     {
         {
@@ -118,6 +119,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
                     body.Add($"params.{param.Name} = {param.Name};");
                 }
             }
+
             body.Add("");
         }
 
