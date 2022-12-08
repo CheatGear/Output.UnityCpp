@@ -23,6 +23,8 @@ public static class LangPrintHelper
             Value = define.Value,
             Conditions = define.Conditions,
             Comments = define.Comments,
+            BeforePrint = define.BeforePrint,
+            AfterPrint = define.AfterPrint,
         };
     }
 
@@ -42,6 +44,8 @@ public static class LangPrintHelper
             HexValues = eEnum.HexValues,
             Conditions = eEnum.Conditions,
             Comments = eEnum.Comments,
+            BeforePrint = eEnum.BeforePrint,
+            AfterPrint = eEnum.AfterPrint,
         }.WithComment(new List<string>() { eEnum.FullName });
     }
 
@@ -59,6 +63,8 @@ public static class LangPrintHelper
             Value = constant.Value,
             Conditions = constant.Conditions,
             Comments = constant.Comments,
+            BeforePrint = constant.BeforePrint,
+            AfterPrint = constant.AfterPrint,
         };
     }
 
@@ -96,6 +102,8 @@ public static class LangPrintHelper
             InlineComment = field.Comment,
             Conditions = field.Conditions,
             Comments = field.Comments,
+            BeforePrint = field.BeforePrint,
+            AfterPrint = field.AfterPrint,
         }.WithInlineComment(inlineComment.ToString());
     }
 
@@ -112,6 +120,8 @@ public static class LangPrintHelper
             Type = (param.IsReference ? "const " : "") + param.Type + (param.IsReference ? "&" : (param.IsOut ? "*" : "")),
             Conditions = param.Conditions,
             Comments = param.Comments,
+            BeforePrint = param.BeforePrint,
+            AfterPrint = param.AfterPrint,
         };
     }
 
@@ -172,6 +182,8 @@ public static class LangPrintHelper
             Inline = func.IsInline,
             Conditions = func.Conditions,
             Comments = func.Comments,
+            BeforePrint = func.BeforePrint,
+            AfterPrint = func.AfterPrint,
         }.WithComment(comments);
     }
 
@@ -206,6 +218,8 @@ public static class LangPrintHelper
             Friends = @struct.Friends,
             Conditions = @struct.Conditions,
             Comments = comments,
+            BeforePrint = @struct.BeforePrint,
+            AfterPrint = @struct.AfterPrint,
         };
     }
 
