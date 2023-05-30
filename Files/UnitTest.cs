@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CG.Framework.Engines.Models;
-using CG.Framework.Helper;
-using CG.Framework.Plugin.Output;
+using CG.SDK.Dotnet.Engine.Models;
+using CG.SDK.Dotnet.Helper;
+using CG.SDK.Dotnet.Plugin.Output;
 
 namespace CG.Output.UnityCpp.Files;
 
 public class UnitTest : IncludeFile<UnityCpp>
 {
     public override string FileName => "UnitTest.cpp";
+
     public override bool IncludeInMainSdkFile { get; } = false;
 
     public UnitTest(UnityCpp lang) : base(lang)
     {
     }
 
-    public override async ValueTask<string> ProcessAsync(OutputProps processProps)
+    public override async ValueTask<string> ProcessAsync(OutputPurpose processPurpose)
     {
         // Read File
-        string fileStr = await CGUtils.ReadEmbeddedFileAsync(Path.Combine("Internal", FileName), this.GetType().Assembly).ConfigureAwait(false);
+        string fileStr = await CGUtils.ReadEmbeddedFileAsync(Path.Combine("Internal", FileName), GetType().Assembly).ConfigureAwait(false);
 
         // CLASSES_ASSERT
         const string unitTemplate = @"

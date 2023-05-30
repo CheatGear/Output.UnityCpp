@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CG.Framework.Engines.Models;
-using CG.Framework.Helper;
+using CG.SDK.Dotnet.Engine.Models;
+using CG.SDK.Dotnet.Helper;
 using LangPrint;
 using LangPrint.Cpp;
 
@@ -24,7 +24,7 @@ public static class LangPrintHelper
             Conditions = define.Conditions,
             Comments = define.Comments,
             BeforePrint = define.BeforePrint,
-            AfterPrint = define.AfterPrint,
+            AfterPrint = define.AfterPrint
         };
     }
 
@@ -45,7 +45,7 @@ public static class LangPrintHelper
             Conditions = eEnum.Conditions,
             Comments = eEnum.Comments,
             BeforePrint = eEnum.BeforePrint,
-            AfterPrint = eEnum.AfterPrint,
+            AfterPrint = eEnum.AfterPrint
         }.WithComment(new List<string>() { eEnum.FullName });
     }
 
@@ -64,7 +64,7 @@ public static class LangPrintHelper
             Conditions = constant.Conditions,
             Comments = constant.Comments,
             BeforePrint = constant.BeforePrint,
-            AfterPrint = constant.AfterPrint,
+            AfterPrint = constant.AfterPrint
         };
     }
 
@@ -103,7 +103,7 @@ public static class LangPrintHelper
             Conditions = field.Conditions,
             Comments = field.Comments,
             BeforePrint = field.BeforePrint,
-            AfterPrint = field.AfterPrint,
+            AfterPrint = field.AfterPrint
         }.WithInlineComment(inlineComment.ToString());
     }
 
@@ -117,11 +117,11 @@ public static class LangPrintHelper
         return new CppParameter()
         {
             Name = param.Name,
-            Type = (param.IsReference ? "const " : "") + param.Type + (param.IsReference ? "&" : (param.IsOut ? "*" : "")),
+            Type = (param.IsReference ? "const " : "") + param.Type + (param.IsReference ? "&" : param.IsOut ? "*" : ""),
             Conditions = param.Conditions,
             Comments = param.Comments,
             BeforePrint = param.BeforePrint,
-            AfterPrint = param.AfterPrint,
+            AfterPrint = param.AfterPrint
         };
     }
 
@@ -146,9 +146,9 @@ public static class LangPrintHelper
             comments = new List<string>()
             {
                 "Function:",
-                $"\t\tRVA    -> 0x{func.RVA:X8}",
+                $"\t\tRVA    -> 0x{func.Rva:X8}",
                 $"\t\tName   -> {func.FullName}",
-                $"\t\tFlags  -> ({func.FlagsString})",
+                $"\t\tFlags  -> ({func.FlagsString})"
             };
 
             if (@params.Count > 0)
@@ -183,7 +183,7 @@ public static class LangPrintHelper
             Conditions = func.Conditions,
             Comments = func.Comments,
             BeforePrint = func.BeforePrint,
-            AfterPrint = func.AfterPrint,
+            AfterPrint = func.AfterPrint
         }.WithComment(comments);
     }
 
@@ -219,7 +219,7 @@ public static class LangPrintHelper
             Conditions = @struct.Conditions,
             Comments = comments,
             BeforePrint = @struct.BeforePrint,
-            AfterPrint = @struct.AfterPrint,
+            AfterPrint = @struct.AfterPrint
         };
     }
 

@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CG.Framework.Attributes;
-using CG.Framework.Engines;
-using CG.Framework.Engines.Models;
-using CG.Framework.Engines.Unity;
-using CG.Framework.Engines.Unreal;
-using CG.Framework.Helper;
-using CG.Framework.Helper.IO;
-using CG.Framework.Plugin.Output;
 using CG.Output.UnityCpp.Files;
 using CG.Output.UnityCpp.Helper;
+using CG.SDK.Dotnet.Attributes;
+using CG.SDK.Dotnet.Engine;
+using CG.SDK.Dotnet.Engine.Models;
+using CG.SDK.Dotnet.Engine.Unity;
+using CG.SDK.Dotnet.Engine.Unreal;
+using CG.SDK.Dotnet.Helper;
+using CG.SDK.Dotnet.Helper.IO;
+using CG.SDK.Dotnet.Plugin.Output;
 using LangPrint;
 using LangPrint.Cpp;
 
@@ -24,7 +24,7 @@ internal enum CppOptions
     PrecompileSyntax
 }
 
-[PluginInfo("CorrM", "UnityCpp", "Cpp syntax support for Unity", "https://github.com/CheatGear", "https://github.com/CheatGear/Output.UnityCpp")]
+[PluginInfo(Name = nameof(UnityCpp), Version = "5.0.0", Author = "CorrM", Description = "Cpp syntax support for Unity", WebsiteLink = "https://github.com/CheatGear", SourceCodeLink = "https://github.com/CheatGear/Output.UnityCpp")]
 public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 {
     private CppProcessor _cppProcessor;
@@ -32,38 +32,52 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     protected override Dictionary<string, string> LangTypes { get; } = new()
     {
         // SdkVarType       LangType
-        { "int64", "int64_t" },
-        { "int32", "int32_t" },
-        { "int16", "int16_t" },
-        { "int8", "int8_t" },
+        {
+            "int64", "int64_t"
+        },
+        {
+            "int32", "int32_t"
+        },
+        {
+            "int16", "int16_t"
+        },
+        {
+            "int8", "int8_t"
+        },
 
-        { "uint64", "uint64_t" },
-        { "uint32", "uint32_t" },
-        { "uint16", "uint16_t" },
-        { "uint8", "uint8_t" }
+        {
+            "uint64", "uint64_t"
+        },
+        {
+            "uint32", "uint32_t"
+        },
+        {
+            "uint16", "uint16_t"
+        },
+        {
+            "uint8", "uint8_t"
+        }
     };
 
     internal List<EngineClass> SavedClasses { get; } = new();
     internal List<EngineStruct> SavedStructs { get; } = new();
 
-    public override Version TargetFrameworkVersion { get; } = new(3, 1, 0);
-    public override Version PluginVersion { get; } = new(3, 1, 0);
-
     public override string OutputName => "Cpp";
-    public override EngineType SupportedEngines => EngineType.Unity;
-    public override OutputProps SupportedProps => OutputProps.Internal /* | OutputProps.External*/;
+
+    public override GameEngine SupportedEngines => GameEngine.Unity;
+
+    public override OutputPurpose SupportedPurpose => OutputPurpose.Internal /* | OutputProps.External*/;
 
     public override IReadOnlyDictionary<Enum, OutputOption> Options { get; } = new Dictionary<Enum, OutputOption>()
     {
         {
-            CppOptions.PrecompileSyntax,
-            new OutputOption(
+            CppOptions.PrecompileSyntax, new OutputOption(
                 "Precompile Syntax",
                 OutputOptionType.CheckBox,
                 "Use precompile headers for most build speed",
                 "true"
             )
-        },
+        }
     };
 
     private List<string> BuildMethodBody(EngineStruct @class, EngineFunction function)
@@ -252,10 +266,10 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             }
             */
 
-            CppFunction initZeroParamFunc = cppPackage.Functions.Find(cf => cf.Name == "InitSdk" && cf.Params.Count == 0);
+            CppFunction? initZeroParamFunc = cppPackage.Functions.Find(cf => cf.Name == "InitSdk" && cf.Params.Count == 0);
             if (initZeroParamFunc is not null)
             {
-                for (var i = 0; i < initZeroParamFunc.Body.Count; i++)
+                for (int i = 0; i < initZeroParamFunc.Body.Count; i++)
                 {
                     string s = initZeroParamFunc.Body[i]
                         .Replace("MODULE_NAME", SdkFile.GameModule);
@@ -364,7 +378,10 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             {
                 Name = $"{@class.NameCpp}_{func.Name}_Params",
                 IsClass = false,
-                Comments = new List<string>() { func.FullName }
+                Comments = new List<string>()
+                {
+                    func.FullName
+                }
             };
 
             foreach (EngineParameter p in func.Parameters)
@@ -423,7 +440,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     /// <returns>Merged package</returns>
     private UnityPackage MergePackages(IEnumerable<UnityPackage> packages, string packageName)
     {
-        var bigPackage = new UnityPackage(EngineVersion.UnityIl2Cpp, null)
+        var bigPackage = new UnityPackage(UnityEngineVersion.UnityIl2Cpp, null)
         {
             Name = packageName,
             CppName = packageName
@@ -507,9 +524,16 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             Name = enginePackage.Name,
             //BeforeNameSpace = $"#ifdef _MSC_VER{Environment.NewLine}\t#pragma pack(push, 0x{SdkFile.GlobalMemberAlignment:X2}){Environment.NewLine}#endif",
             //AfterNameSpace = $"#ifdef _MSC_VER{Environment.NewLine}\t#pragma pack(pop){Environment.NewLine}#endif",
-            HeadingComment = new List<string>() { $"Name: {SdkFile.GameName}", $"Version: {SdkFile.GameVersion}" },
+            HeadingComment = new List<string>()
+            {
+                $"Name: {SdkFile.GameName}",
+                $"Version: {SdkFile.GameVersion}"
+            },
             NameSpace = SdkFile.Namespace,
-            Pragmas = new List<string>() { "once" },
+            Pragmas = new List<string>()
+            {
+                "once"
+            },
             Forwards = enginePackage.Forwards,
             TypeDefs = enginePackage.TypeDefs,
             Defines = GetDefines(enginePackage).ToList(),
@@ -518,7 +542,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             Constants = GetConstants(enginePackage).ToList(),
             Enums = GetEnums(enginePackage).ToList(),
             Structs = structs,
-            Conditions = enginePackage.Conditions,
+            Conditions = enginePackage.Conditions
         };
 
         // Make static fields be pointer to type
@@ -562,8 +586,8 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     /// <summary>
     /// Process local files that needed to be included
     /// </summary>
-    /// <param name="processProps">Process props</param>
-    private async ValueTask<Dictionary<string, string>> GenerateIncludesAsync(OutputProps processProps)
+    /// <param name="processPurpose">Process props</param>
+    private async ValueTask<Dictionary<string, string>> GenerateIncludesAsync(OutputPurpose processPurpose)
     {
         var ret = new Dictionary<string, string>();
         return ret;
@@ -571,20 +595,20 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         // Init
         var unitTestCpp = new UnitTest(this);
 
-        if (processProps == OutputProps.External)
+        if (processPurpose == OutputPurpose.External)
         {
             var mmHeader = new MemManagerHeader(this);
             var mmCpp = new MemManagerCpp(this);
 
-            ValueTask<string> taskMmHeader = mmHeader.ProcessAsync(processProps);
-            ValueTask<string> taskMmCpp = mmCpp.ProcessAsync(processProps);
+            ValueTask<string> taskMmHeader = mmHeader.ProcessAsync(processPurpose);
+            ValueTask<string> taskMmCpp = mmCpp.ProcessAsync(processPurpose);
 
             ret.Add(mmHeader.FileName, await taskMmHeader.ConfigureAwait(false));
             ret.Add(mmCpp.FileName, await taskMmCpp.ConfigureAwait(false));
         }
 
         // Process
-        ValueTask<string> taskUnitTestCpp = unitTestCpp.ProcessAsync(processProps);
+        ValueTask<string> taskUnitTestCpp = unitTestCpp.ProcessAsync(processPurpose);
 
         // Wait tasks
         ret.Add(unitTestCpp.FileName, await taskUnitTestCpp.ConfigureAwait(false));
@@ -593,7 +617,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         if (Options[CppOptions.PrecompileSyntax].Value == "true")
         {
             var pchHeader = new PchHeader(this);
-            ret.Add(pchHeader.FileName, await pchHeader.ProcessAsync(processProps).ConfigureAwait(false));
+            ret.Add(pchHeader.FileName, await pchHeader.ProcessAsync(processPurpose).ConfigureAwait(false));
         }
 
         return ret;
@@ -649,7 +673,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         return ValueTask.CompletedTask;
     }
 
-    public override async ValueTask StartAsync(string saveDirPath, OutputProps processProps)
+    public override async ValueTask SaveAsync(string saveDirPath, OutputPurpose processPurpose)
     {
         var builder = new MyStringBuilder();
         builder.AppendLine($"#pragma once{Environment.NewLine}");
@@ -689,7 +713,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         }
 
         // Includes
-        foreach ((string fName, string fContent) in await GenerateIncludesAsync(processProps).ConfigureAwait(false))
+        foreach ((string fName, string fContent) in await GenerateIncludesAsync(processPurpose).ConfigureAwait(false))
         {
             await FileManager.WriteAsync(saveDirPath, fName, fContent).ConfigureAwait(false);
 

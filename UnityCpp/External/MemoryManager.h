@@ -121,7 +121,7 @@ public:
     template <typename T>
     void DeletePtr(T* allocPtr)
     {
-        void* ptr = reinterpret_cast<void*>(allocPtr);
+        auto ptr = reinterpret_cast<void*>(allocPtr);
 
         if (!ContainsAllocPtr(ptr))
             return;
