@@ -32,35 +32,19 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     protected override Dictionary<string, string> LangTypes { get; } = new()
     {
         // SdkVarType       LangType
-        {
-            "int64", "int64_t"
-        },
-        {
-            "int32", "int32_t"
-        },
-        {
-            "int16", "int16_t"
-        },
-        {
-            "int8", "int8_t"
-        },
+        { "int64", "int64_t" },
+        { "int32", "int32_t" },
+        { "int16", "int16_t" },
+        { "int8", "int8_t" },
 
-        {
-            "uint64", "uint64_t"
-        },
-        {
-            "uint32", "uint32_t"
-        },
-        {
-            "uint16", "uint16_t"
-        },
-        {
-            "uint8", "uint8_t"
-        }
+        { "uint64", "uint64_t" },
+        { "uint32", "uint32_t" },
+        { "uint16", "uint16_t" },
+        { "uint8", "uint8_t" }
     };
 
-    internal List<EngineClass> SavedClasses { get; } = new();
-    internal List<EngineStruct> SavedStructs { get; } = new();
+    internal List<EngineClass> SavedClasses { get; } = [];
+    internal List<EngineStruct> SavedStructs { get; } = [];
 
     public override string OutputName => "Cpp";
 
@@ -206,10 +190,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 
     private static List<string> GenerateMethodConditions()
     {
-        return new List<string>()
-        {
-            //$"!{nameof(CppOptions.OffsetsOnly)}"
-        };
+        return [];
     }
 
     private void PreparePackageModel(CppPackage cppPackage, IEnginePackage enginePackage)
@@ -378,10 +359,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             {
                 Name = $"{@class.NameCpp}_{func.Name}_Params",
                 IsClass = false,
-                Comments = new List<string>()
-                {
-                    func.FullName
-                }
+                Comments = [func.FullName]
             };
 
             foreach (EngineParameter p in func.Parameters)
@@ -524,16 +502,13 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             Name = enginePackage.Name,
             //BeforeNameSpace = $"#ifdef _MSC_VER{Environment.NewLine}\t#pragma pack(push, 0x{SdkFile.GlobalMemberAlignment:X2}){Environment.NewLine}#endif",
             //AfterNameSpace = $"#ifdef _MSC_VER{Environment.NewLine}\t#pragma pack(pop){Environment.NewLine}#endif",
-            HeadingComment = new List<string>()
-            {
+            HeadingComment =
+            [
                 $"Name: {SdkFile.GameName}",
                 $"Version: {SdkFile.GameVersion}"
-            },
+            ],
             NameSpace = SdkFile.Namespace,
-            Pragmas = new List<string>()
-            {
-                "once"
-            },
+            Pragmas = ["once"],
             Forwards = enginePackage.Forwards,
             TypeDefs = enginePackage.TypeDefs,
             Defines = GetDefines(enginePackage).ToList(),
