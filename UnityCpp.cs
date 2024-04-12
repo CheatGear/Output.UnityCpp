@@ -24,7 +24,13 @@ internal enum CppOptions
     PrecompileSyntax
 }
 
-[PluginInfo(Name = nameof(UnityCpp), Version = "5.0.0", Author = "CorrM", Description = "Cpp syntax support for Unity", WebsiteLink = "https://github.com/CheatGear", SourceCodeLink = "https://github.com/CheatGear/Output.UnityCpp")]
+[PluginInfo(Name = nameof(UnityCpp),
+    Version = "5.0.0",
+    Author = "CorrM",
+    Description = "Cpp syntax support for Unity",
+    WebsiteLink = "https://github.com/CheatGear",
+    SourceCodeLink = "https://github.com/CheatGear/Output.UnityCpp"
+)]
 public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 {
     private CppProcessor _cppProcessor;
@@ -112,7 +118,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
                 {
                     // Not needed
                     if (param.Name.StartsWith("UnknownData_") && param.Type == "unsigned char")
+                    {
                         continue;
+                    }
 
                     body.Add($"params.{param.Name} = {param.Name};");
                 }
@@ -126,7 +134,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             body.Add("auto flags = fn->FunctionFlags;");
 
             if (function.IsNative)
+            {
                 body.Add($"fn->FunctionFlags |= 0x{UnrealFunctionFlags.UE4Native:X};");
+            }
 
             if (function.IsStatic)
             {
@@ -247,7 +257,8 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             }
             */
 
-            CppFunction? initZeroParamFunc = cppPackage.Functions.Find(cf => cf.Name == "InitSdk" && cf.Params.Count == 0);
+            CppFunction? initZeroParamFunc =
+                cppPackage.Functions.Find(cf => cf.Name == "InitSdk" && cf.Params.Count == 0);
             if (initZeroParamFunc is not null)
             {
                 for (int i = 0; i < initZeroParamFunc.Body.Count; i++)
@@ -274,7 +285,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     {
         // Prepare methods
         foreach (EngineFunction eFunc in eStruct.Methods)
+        {
             PrepareEngineFunction(eStruct, eFunc);
+        }
 
         // Const not in struct memory layout
         // ex: FVector2 have `kEpsilon` and `kEpsilonNormalSqrt`
@@ -289,7 +302,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 #endif
 
         if (eStruct is EngineClass)
+        {
             cppStruct.IsClass = true;
+        }
 
         foreach (CppFunction cppFunc in cppStruct.Methods)
         {
@@ -320,7 +335,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         {
             bool haveValue = cppEnum.Values[0].Name is "value" or "value__";
             if (haveValue)
+            {
                 cppEnum.Values.RemoveAt(0);
+            }
         }
 
         return ret;
@@ -365,10 +382,14 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             foreach (EngineParameter p in func.Parameters)
             {
                 if (p.IsReturn)
+                {
                     continue;
+                }
 
                 if (p.Name.StartsWith("UnknownData_") && p.Type == "unsigned char")
+                {
                     continue;
+                }
 
                 var cppVar = new CppField()
                 {
@@ -396,10 +417,21 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         var includes = new List<string>();
 
         if (Options[CppOptions.PrecompileSyntax].Value != "true")
+        {
             includes.Add("\"../SDK.h\"");
+        }
 
         // File header
-        sb.Append(_cppProcessor.GetFileHeader(package.HeadingComment, package.NameSpace, pragmas, includes, null, package.TypeDefs, package.BeforeNameSpace, out int indentLvl));
+        sb.Append(_cppProcessor.GetFileHeader(package.HeadingComment,
+                package.NameSpace,
+                pragmas,
+                includes,
+                null,
+                package.TypeDefs,
+                package.BeforeNameSpace,
+                out int indentLvl
+            )
+        );
 
         // Structs
         sb.Append(_cppProcessor.GenerateStructs(paramStructs, indentLvl, null));
@@ -525,7 +557,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         foreach (CppField cppField in cppPackage.Structs.SelectMany(s => s.Fields))
         {
             if (!cppField.Static)
+            {
                 continue;
+            }
 
             cppField.Type = $"{cppField.Type}*";
         }
@@ -549,11 +583,17 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             .ToDictionary(kv => Path.Combine("SDK", kv.Key), kv => kv.Value);
 
         foreach ((string fName, string fContent) in cppFiles)
+        {
             ret.Add(fName, fContent);
+        }
 
         // Useful for unit tests
-        SavedStructs.AddRange(structs.Where(cs => !cs.IsClass).SelectMany(cs => enginePackage.Structs.Where(ec => ec.NameCpp == cs.Name)));
-        SavedClasses.AddRange(structs.Where(cs => cs.IsClass).SelectMany(cs => enginePackage.Classes.Where(ec => ec.NameCpp == cs.Name)));
+        SavedStructs.AddRange(structs.Where(cs => !cs.IsClass)
+            .SelectMany(cs => enginePackage.Structs.Where(ec => ec.NameCpp == cs.Name))
+        );
+        SavedClasses.AddRange(structs.Where(cs => cs.IsClass)
+            .SelectMany(cs => enginePackage.Classes.Where(ec => ec.NameCpp == cs.Name))
+        );
 
         return ret;
     }
@@ -639,10 +679,14 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         foreach (IEnginePackage pack in SdkFile.Packages.Where(p => !p.IsPredefined))
         {
             foreach (EngineStruct @struct in pack.Structs)
+            {
                 AddPredefinedMethodsToStruct(@struct);
+            }
 
             foreach (EngineClass @class in pack.Classes)
+            {
                 AddPredefinedMethodsToClass(@class);
+            }
         }
 
         return ValueTask.CompletedTask;
@@ -673,7 +717,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         foreach (UnityPackage pack in SdkFile.Packages)
         {
             foreach ((string fName, string fContent) in await GeneratePackageFilesAsync(pack).ConfigureAwait(false))
+            {
                 await FileManager.WriteAsync(saveDirPath, fName, fContent).ConfigureAwait(false);
+            }
 
             if (Status?.ProgressbarStatus is not null)
             {
@@ -693,16 +739,21 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             await FileManager.WriteAsync(saveDirPath, fName, fContent).ConfigureAwait(false);
 
             if (!fName.EndsWith(".cpp") && fName.ToLower() != "pch.h")
+            {
                 builder.AppendLine($"#include \"{fName.Replace("\\", "/")}\"");
+            }
         }
 
         builder.Append(Environment.NewLine);
 
         // Package sorter
         if (Status?.TextStatus is not null)
+        {
             await Status.TextStatus.Invoke("Sort packages depend on dependencies").ConfigureAwait(false);
+        }
 
-        PackageSorterResult<IEnginePackage> sortResult = PackageSorter.Sort(SdkFile.Packages.Cast<IEnginePackage>().ToList());
+        PackageSorterResult<IEnginePackage> sortResult =
+            PackageSorter.Sort(SdkFile.Packages.Cast<IEnginePackage>().ToList());
         if (sortResult.CycleList.Count > 0)
         {
             builder.AppendLine("// # Dependency cycle headers");
@@ -719,10 +770,14 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         }
 
         foreach (IEnginePackage package in sortResult.SortedList.Where(p => p.IsPredefined))
+        {
             builder.AppendLine($"#include \"SDK/{package.Name}_Package.h\"");
+        }
 
         foreach (IEnginePackage package in sortResult.SortedList.Where(p => !p.IsPredefined))
+        {
             builder.AppendLine($"#include \"SDK/{package.Name}_Package.h\"");
+        }
 
         await FileManager.WriteAsync(saveDirPath, "SDK.h", builder.ToString()).ConfigureAwait(false);
     }

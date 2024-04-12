@@ -84,10 +84,14 @@ public static class LangPrintHelper
         inlineComment.Append($"0x{field.Offset:X4}(0x{field.Size:X4})");
 
         if (!string.IsNullOrEmpty(field.Comment))
+        {
             inlineComment.Append($" {field.Comment}");
+        }
 
         if (!string.IsNullOrEmpty(field.FlagsString))
+        {
             inlineComment.Append($" {field.FlagsString}");
+        }
 
         return new CppField()
         {
@@ -122,7 +126,8 @@ public static class LangPrintHelper
         return new CppParameter()
         {
             Name = param.Name,
-            Type = (param.IsReference ? "const " : "") + param.Type + (param.IsReference ? "&" : param.IsOut ? "*" : ""),
+            Type =
+                (param.IsReference ? "const " : "") + param.Type + (param.IsReference ? "&" : param.IsOut ? "*" : ""),
             Conditions = param.Conditions,
             Comments = param.Comments,
             BeforePrint = param.BeforePrint,
@@ -157,7 +162,9 @@ public static class LangPrintHelper
             ];
 
             if (@params.Count > 0)
+            {
                 comments.Add("Parameters:");
+            }
 
             foreach (EngineParameter param in @params)
             {
@@ -171,7 +178,9 @@ public static class LangPrintHelper
 
         bool isStatic = func.IsStatic;
         if (func.IsStatic && !func.IsPredefined && func.Name.StartsWith("STATIC_"))
+        {
             isStatic = false;
+        }
 
         return new CppFunction()
         {

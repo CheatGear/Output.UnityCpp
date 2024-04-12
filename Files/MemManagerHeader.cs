@@ -18,7 +18,9 @@ public class MemManagerHeader : IncludeFile<UnityCpp>
     public override ValueTask<string> ProcessAsync(OutputPurpose processPurpose)
     {
         if (Lang.SdkFile is null)
+        {
             throw new InvalidOperationException("Invalid output target.");
+        }
 
         // Read File
         return CGUtils.ReadEmbeddedFileAsync(Path.Combine("External", FileName), GetType().Assembly);
