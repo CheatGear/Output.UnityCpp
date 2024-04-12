@@ -8,12 +8,12 @@ namespace CG.Output.UnityCpp.Files;
 
 public class PchHeader : IncludeFile<UnityCpp>
 {
-    public override string FileName { get; } = "pch.h";
-    public override bool IncludeInMainSdkFile { get; } = false;
-
     public PchHeader(UnityCpp lang) : base(lang)
     {
     }
+
+    public override string FileName { get; } = "pch.h";
+    public override bool IncludeInMainSdkFile { get; } = false;
 
     public override ValueTask<string> ProcessAsync(OutputPurpose processPurpose)
     {

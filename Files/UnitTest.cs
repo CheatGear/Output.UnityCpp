@@ -11,13 +11,13 @@ namespace CG.Output.UnityCpp.Files;
 
 public class UnitTest : IncludeFile<UnityCpp>
 {
-    public override string FileName => "UnitTest.cpp";
-
-    public override bool IncludeInMainSdkFile { get; } = false;
-
     public UnitTest(UnityCpp lang) : base(lang)
     {
     }
+
+    public override string FileName => "UnitTest.cpp";
+
+    public override bool IncludeInMainSdkFile { get; } = false;
 
     public override async ValueTask<string> ProcessAsync(OutputPurpose processPurpose)
     {
@@ -40,13 +40,15 @@ public class UnitTest : IncludeFile<UnityCpp>
         {
             return ss
                 .Where(c => !c.NameCpp.EndsWith("_Class"))
-                .Select(c =>
+                .Select(
+                    c =>
                     {
                         string cheatGearClassName = $"{Lang.SdkFile.Namespace}::{c.NameCpp}";
                         string[] memberTests = c.Fields
                             .Where(m => !m.IsStatic && !m.IsBitField)
-                            .Select(m =>
-                                $"\t\t\tCHEAT_GEAR_CHECK_OFFSET({{3}}, {m.Name.Split('[')[0].Split(':')[0].Trim()}, 0x{m.Offset:X4});"
+                            .Select(
+                                m =>
+                                    $"\t\t\tCHEAT_GEAR_CHECK_OFFSET({{3}}, {m.Name.Split('[')[0].Split(':')[0].Trim()}, 0x{m.Offset:X4});"
                             )
                             .ToArray();
 

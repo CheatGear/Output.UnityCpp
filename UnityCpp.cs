@@ -21,10 +21,11 @@ namespace CG.Output.UnityCpp;
 
 internal enum CppOptions
 {
-    PrecompileSyntax
+    PrecompileSyntax,
 }
 
-[PluginInfo(Name = nameof(UnityCpp),
+[PluginInfo(
+    Name = nameof(UnityCpp),
     Version = "5.0.0",
     Author = "CorrM",
     Description = "Cpp syntax support for Unity",
@@ -42,11 +43,10 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         { "int32", "int32_t" },
         { "int16", "int16_t" },
         { "int8", "int8_t" },
-
         { "uint64", "uint64_t" },
         { "uint32", "uint32_t" },
         { "uint16", "uint16_t" },
-        { "uint8", "uint8_t" }
+        { "uint8", "uint8_t" },
     };
 
     internal List<EngineClass> SavedClasses { get; } = [];
@@ -58,7 +58,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 
     public override OutputPurpose SupportedPurpose => OutputPurpose.Internal /* | OutputProps.External*/;
 
-    public override IReadOnlyDictionary<Enum, OutputOption> Options { get; } = new Dictionary<Enum, OutputOption>()
+    public override IReadOnlyDictionary<Enum, OutputOption> Options { get; } = new Dictionary<Enum, OutputOption>
     {
         {
             CppOptions.PrecompileSyntax, new OutputOption(
@@ -67,7 +67,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
                 "Use precompile headers for most build speed",
                 "true"
             )
-        }
+        },
     };
 
     private List<string> BuildMethodBody(EngineStruct @class, EngineFunction function)
@@ -372,11 +372,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 
         foreach ((EngineClass @class, EngineFunction func) in functions)
         {
-            var cppParamStruct = new CppStruct()
+            var cppParamStruct = new CppStruct
             {
-                Name = $"{@class.NameCpp}_{func.Name}_Params",
-                IsClass = false,
-                Comments = [func.FullName]
+                Name = $"{@class.NameCpp}_{func.Name}_Params", IsClass = false, Comments = [func.FullName],
             };
 
             foreach (EngineParameter p in func.Parameters)
@@ -391,11 +389,11 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
                     continue;
                 }
 
-                var cppVar = new CppField()
+                var cppVar = new CppField
                 {
                     Type = p.Type,
                     Name = p.Name,
-                    InlineComment = $"0x{p.Offset:X4}(0x{p.Size:X4}) {p.Comment} ({p.FlagsString})"
+                    InlineComment = $"0x{p.Offset:X4}(0x{p.Size:X4}) {p.Comment} ({p.FlagsString})",
                 };
 
                 cppParamStruct.Fields.Add(cppVar);
@@ -410,10 +408,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     private string MakeFuncParametersFile(CppPackage package, IEnumerable<CppStruct> paramStructs)
     {
         var sb = new StringBuilder();
-        var pragmas = new List<string>()
-        {
-            "once"
-        };
+        var pragmas = new List<string> { "once" };
         var includes = new List<string>();
 
         if (Options[CppOptions.PrecompileSyntax].Value != "true")
@@ -422,7 +417,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         }
 
         // File header
-        sb.Append(_cppProcessor.GetFileHeader(package.HeadingComment,
+        sb.Append(
+            _cppProcessor.GetFileHeader(
+                package.HeadingComment,
                 package.NameSpace,
                 pragmas,
                 includes,
@@ -443,7 +440,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     }
 
     /// <summary>
-    /// Merge packages in one package
+    ///     Merge packages in one package
     /// </summary>
     /// <param name="packages">Packages to merge</param>
     /// <param name="packageName">Merged package name</param>
@@ -452,8 +449,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     {
         var bigPackage = new UnityPackage(UnityEngineVersion.UnityIl2Cpp, null)
         {
-            Name = packageName,
-            CppName = packageName
+            Name = packageName, CppName = packageName,
         };
 
         foreach (UnityPackage package in packages)
@@ -509,7 +505,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     }
 
     /// <summary>
-    /// Generate enginePackage files
+    ///     Generate enginePackage files
     /// </summary>
     /// <param name="enginePackage">Package to generate files for</param>
     /// <returns>File name and its content</returns>
@@ -529,16 +525,12 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         structs.AddRange(GetClasses(enginePackage));
 
         // Make CppPackage
-        var cppPackage = new CppPackage()
+        var cppPackage = new CppPackage
         {
             Name = enginePackage.Name,
             //BeforeNameSpace = $"#ifdef _MSC_VER{Environment.NewLine}\t#pragma pack(push, 0x{SdkFile.GlobalMemberAlignment:X2}){Environment.NewLine}#endif",
             //AfterNameSpace = $"#ifdef _MSC_VER{Environment.NewLine}\t#pragma pack(pop){Environment.NewLine}#endif",
-            HeadingComment =
-            [
-                $"Name: {SdkFile.GameName}",
-                $"Version: {SdkFile.GameVersion}"
-            ],
+            HeadingComment = [$"Name: {SdkFile.GameName}", $"Version: {SdkFile.GameVersion}"],
             NameSpace = SdkFile.Namespace,
             Pragmas = ["once"],
             Forwards = enginePackage.Forwards,
@@ -549,7 +541,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             Constants = GetConstants(enginePackage).ToList(),
             Enums = GetEnums(enginePackage).ToList(),
             Structs = structs,
-            Conditions = enginePackage.Conditions
+            Conditions = enginePackage.Conditions,
         };
 
         // Make static fields be pointer to type
@@ -588,18 +580,20 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         }
 
         // Useful for unit tests
-        SavedStructs.AddRange(structs.Where(cs => !cs.IsClass)
-            .SelectMany(cs => enginePackage.Structs.Where(ec => ec.NameCpp == cs.Name))
+        SavedStructs.AddRange(
+            structs.Where(cs => !cs.IsClass)
+                .SelectMany(cs => enginePackage.Structs.Where(ec => ec.NameCpp == cs.Name))
         );
-        SavedClasses.AddRange(structs.Where(cs => cs.IsClass)
-            .SelectMany(cs => enginePackage.Classes.Where(ec => ec.NameCpp == cs.Name))
+        SavedClasses.AddRange(
+            structs.Where(cs => cs.IsClass)
+                .SelectMany(cs => enginePackage.Classes.Where(ec => ec.NameCpp == cs.Name))
         );
 
         return ret;
     }
 
     /// <summary>
-    /// Process local files that needed to be included
+    ///     Process local files that needed to be included
     /// </summary>
     /// <param name="processPurpose">Process props</param>
     private async ValueTask<Dictionary<string, string>> GenerateIncludesAsync(OutputPurpose processPurpose)
@@ -643,14 +637,14 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         ArgumentNullException.ThrowIfNull(SdkFile);
 
         _cppProcessor = new CppProcessor();
-        var cppOpts = new CppLangOptions()
+        var cppOpts = new CppLangOptions
         {
             NewLine = NewLineType.CRLF,
             PrintSectionName = true,
             InlineCommentPadSize = 56,
             VariableMemberTypePadSize = 60,
             GeneratePackageSyntax = true,
-            AddPackageHeaderToCppFile = false
+            AddPackageHeaderToCppFile = false,
         };
         _cppProcessor.Init(cppOpts);
 
@@ -724,10 +718,11 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             if (Status?.ProgressbarStatus is not null)
             {
                 await Status.ProgressbarStatus.Invoke(
-                    "",
-                    packCount,
-                    SdkFile.Packages.Count - packCount
-                ).ConfigureAwait(false);
+                        "",
+                        packCount,
+                        SdkFile.Packages.Count - packCount
+                    )
+                    .ConfigureAwait(false);
             }
 
             packCount++;
