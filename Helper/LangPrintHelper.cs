@@ -44,7 +44,7 @@ public static class LangPrintHelper
                     kv => new PackageNameValue
                     {
                         Name = kv.Key,
-                        Value = kv.Value
+                        Value = kv.Value,
                     }
                 )
                 .ToList(),
@@ -128,8 +128,9 @@ public static class LangPrintHelper
         return new CppParameter
         {
             Name = param.Name,
-            Type =
-                (param.IsReference ? "const " : "") + param.Type + (param.IsReference ? "&" : param.IsOut ? "*" : ""),
+            Type = (param.IsReference ? "const " : "") +
+                   param.Type +
+                   (param.IsReference ? "&" : param.IsOut ? "*" : ""),
             Conditions = param.Conditions,
             Comments = param.Comments,
             BeforePrint = param.BeforePrint,
@@ -217,7 +218,7 @@ public static class LangPrintHelper
         var comments = new List<string>
         {
             @struct.FullName,
-            sizeInfo
+            sizeInfo,
         };
         comments.AddRange(@struct.Comments);
 

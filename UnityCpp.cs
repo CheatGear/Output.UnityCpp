@@ -61,7 +61,8 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     public override IReadOnlyDictionary<Enum, OutputOption> Options { get; } = new Dictionary<Enum, OutputOption>
     {
         {
-            CppOptions.PrecompileSyntax, new OutputOption(
+            CppOptions.PrecompileSyntax,
+            new OutputOption(
                 "Precompile Syntax",
                 OutputOptionType.CheckBox,
                 "Use precompile headers for most build speed",
@@ -263,8 +264,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
             {
                 for (int i = 0; i < initZeroParamFunc.Body.Count; i++)
                 {
-                    string s = initZeroParamFunc.Body[i]
-                        .Replace("MODULE_NAME", SdkFile.GameModule);
+                    string s = initZeroParamFunc.Body[i].Replace("MODULE_NAME", SdkFile.GameModule);
                     initZeroParamFunc.Body[i] = s;
                 }
             }
@@ -327,9 +327,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 
     private List<CppEnum> GetEnums(IEnginePackage enginePackage)
     {
-        List<CppEnum> ret = enginePackage.Enums
-            .Select(ee => ee.ToCpp())
-            .ToList();
+        List<CppEnum> ret = enginePackage.Enums.Select(ee => ee.ToCpp()).ToList();
 
         foreach (CppEnum cppEnum in ret)
         {
@@ -584,12 +582,10 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 
         // Useful for unit tests
         SavedStructs.AddRange(
-            structs.Where(cs => !cs.IsClass)
-                .SelectMany(cs => enginePackage.Structs.Where(ec => ec.NameCpp == cs.Name))
+            structs.Where(cs => !cs.IsClass).SelectMany(cs => enginePackage.Structs.Where(ec => ec.NameCpp == cs.Name))
         );
         SavedClasses.AddRange(
-            structs.Where(cs => cs.IsClass)
-                .SelectMany(cs => enginePackage.Classes.Where(ec => ec.NameCpp == cs.Name))
+            structs.Where(cs => cs.IsClass).SelectMany(cs => enginePackage.Classes.Where(ec => ec.NameCpp == cs.Name))
         );
 
         return ret;
@@ -662,8 +658,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         // Copy all packages to one package
         // That's because il2cpp can't be presented in packages
         // As generic types have heavy dependency cycle
-        List<UnityPackage> packsToMerge = SdkFile.Packages.Where(p => !p.IsPredefined)
-            .ToList();
+        List<UnityPackage> packsToMerge = SdkFile.Packages.Where(p => !p.IsPredefined).ToList();
         UnityPackage bigPackage = MergePackages(packsToMerge, SdkFile.GameName);
 
         SdkFile.Packages.RemoveAll(p => !p.IsPredefined);
@@ -720,11 +715,7 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
 
             if (Status?.ProgressbarStatus is not null)
             {
-                await Status.ProgressbarStatus.Invoke(
-                        "",
-                        packCount,
-                        SdkFile.Packages.Count - packCount
-                    )
+                await Status.ProgressbarStatus.Invoke("", packCount, SdkFile.Packages.Count - packCount)
                     .ConfigureAwait(false);
             }
 

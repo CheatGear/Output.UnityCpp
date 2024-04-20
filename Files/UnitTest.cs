@@ -38,22 +38,19 @@ public class UnitTest : IncludeFile<UnityCpp>
 
         List<string> GenTestString(IEnumerable<EngineStruct> ss)
         {
-            return ss
-                .Where(c => !c.NameCpp.EndsWith("_Class"))
+            return ss.Where(c => !c.NameCpp.EndsWith("_Class"))
                 .Select(
                     c =>
                     {
                         string cheatGearClassName = $"{Lang.SdkFile.Namespace}::{c.NameCpp}";
-                        string[] memberTests = c.Fields
-                            .Where(m => !m.IsStatic && !m.IsBitField)
+                        string[] memberTests = c.Fields.Where(m => !m.IsStatic && !m.IsBitField)
                             .Select(
                                 m =>
                                     $"\t\t\tCHEAT_GEAR_CHECK_OFFSET({{3}}, {m.Name.Split('[')[0].Split(':')[0].Trim()}, 0x{m.Offset:X4});"
                             )
                             .ToArray();
 
-                        return unitTemplate
-                            .Replace("{0}", c.FullName)
+                        return unitTemplate.Replace("{0}", c.FullName)
                             .Replace("{1}", c.FullName.Replace(" ", "__").Replace(".", "__").Replace("-", "_"))
                             .Replace("{2}", string.Join(Environment.NewLine, memberTests))
                             .Replace("{3}", cheatGearClassName)
