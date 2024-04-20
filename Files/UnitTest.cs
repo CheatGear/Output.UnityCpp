@@ -7,7 +7,7 @@ using CG.SDK.Dotnet.Engine.Models;
 using CG.SDK.Dotnet.Helper;
 using CG.SDK.Dotnet.Plugin.Output;
 
-namespace CG.Output.UnityCpp.Files;
+namespace CG.Output.Files;
 
 public class UnitTest : IncludeFile<UnityCpp>
 {

@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CG.Output.UnityCpp.Files;
-using CG.Output.UnityCpp.Helper;
+using CG.Output.Files;
+using CG.Output.Helper;
 using CG.SDK.Dotnet.Attributes;
 using CG.SDK.Dotnet.Engine;
 using CG.SDK.Dotnet.Engine.Models;
@@ -17,7 +17,7 @@ using CG.SDK.Dotnet.Plugin.Output;
 using LangPrint;
 using LangPrint.Cpp;
 
-namespace CG.Output.UnityCpp;
+namespace CG.Output;
 
 internal enum CppOptions
 {
@@ -374,7 +374,9 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
         {
             var cppParamStruct = new CppStruct
             {
-                Name = $"{@class.NameCpp}_{func.Name}_Params", IsClass = false, Comments = [func.FullName],
+                Name = $"{@class.NameCpp}_{func.Name}_Params",
+                IsClass = false,
+                Comments = [func.FullName],
             };
 
             foreach (EngineParameter p in func.Parameters)
@@ -449,7 +451,8 @@ public sealed class UnityCpp : OutputPlugin<UnitySdkFile>
     {
         var bigPackage = new UnityPackage(UnityEngineVersion.UnityIl2Cpp, null)
         {
-            Name = packageName, CppName = packageName,
+            Name = packageName,
+            CppName = packageName,
         };
 
         foreach (UnityPackage package in packages)

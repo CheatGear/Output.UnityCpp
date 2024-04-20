@@ -6,7 +6,7 @@ using CG.SDK.Dotnet.Helper;
 using LangPrint;
 using LangPrint.Cpp;
 
-namespace CG.Output.UnityCpp.Helper;
+namespace CG.Output.Helper;
 
 public static class LangPrintHelper
 {
@@ -41,7 +41,11 @@ public static class LangPrintHelper
             Type = eEnum.Type,
             IsClass = true,
             Values = eEnum.Values.Select(
-                    kv => new PackageNameValue { Name = kv.Key, Value = kv.Value }
+                    kv => new PackageNameValue
+                    {
+                        Name = kv.Key,
+                        Value = kv.Value
+                    }
                 )
                 .ToList(),
             HexValues = eEnum.HexValues,
@@ -210,7 +214,11 @@ public static class LangPrintHelper
             ? $"Size -> 0x{@struct.Size - @struct.InheritedSize:X4} (FullSize[0x{@struct.Size:X4}] - InheritedSize[0x{@struct.InheritedSize:X4}])"
             : $"Size -> 0x{@struct.Size:X4}";
 
-        var comments = new List<string> { @struct.FullName, sizeInfo };
+        var comments = new List<string>
+        {
+            @struct.FullName,
+            sizeInfo
+        };
         comments.AddRange(@struct.Comments);
 
         return new CppStruct
